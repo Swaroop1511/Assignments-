@@ -1,12 +1,14 @@
-house <- read.csv(file.choose())   
-head(house)    
-qplot( x = house$X506 , y= house$X13)  
-qplot( x = house$X13 , y= house$X13) 
-qplot( x = house$X.1 , y= house$X13)    
+groceries <- read.csv(file.choose())   
+head(groceries)
+summary(groceries)
+qplot( x =groceries$availability , y=groceries$brand)  
+qplot( x = groceries$price , y= groceries$brand) 
+qplot( x = groceries$currency , y= groceries$brand)    
 
-results = lm ( house$X506~house$X13+house$X.1 )
+results = lm ( groceries$brand~groceries$availability+groceries$price+groceries$currency )
 results
 summary(results)
+
 x <- runif(75,0,10)  # 75 random numbers of uniform distribution
 x<-  sort(x)
 y <- 200 + x^3 - 10 * x^2 + x + rnorm(75,0,20)
@@ -43,17 +45,35 @@ points(x,fit, type="l", col=2)
 points(x,lr$coefficients[1] + lr$coefficients[2] * x, type="l", col=4 )
 
 # Logistic regression
-house_input  <- read.csv(file.choose()) 
-head(house_input)
+
+groceries_input  <- read.csv(file.choose())  
+head(groceries_input)
+sum(groceries$price)
+
+# Lets look around first at those who actually churned
+gr <- groceries_input[groceries_input$price=="1",]
+qplot( x = groceries$name  )
+qplot( x = groceries$price  ) 
+qplot( x = groceries$brand ) 
+qplot( x = groceries$availability)    
+
+# Now let's see those who did not churn
+gr <- groceries_input[groceries_input$price=="0",]
+qplot( x = groceries$name  )
+qplot( x = groceries$price  ) 
+qplot( x = groceries$brand ) 
+qplot( x = groceries$availability)
+
+
+# Now fit the logistic regression models
+groceries_logistic1 <- glm(availability ~ price + currency + brand + avg_rating, 
+                           data = groceries_input, family = binomial(link = "logit"))
+summary(groceries_logistic1)
+
+groceries_logistic2 <- glm(availability ~ price + avg_rating, 
+                           data = groceries_input, family = binomial(link = "logit"))
+summary(groceries_logistic2)
 
 
 
-
-# Assuming 'house_input' is your data frame and 'Target' is the dependent variable
-house_logistic1 <- glm(Target ~ X506 + X13 + X.2, 
-                       data = house_input, 
-                       family = binomial(link = "logit"))
-
-# Print summary of the model
-summary(house_logistic1)
 
